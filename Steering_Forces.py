@@ -19,11 +19,17 @@ def required_torque(fnorm, mus, rs, mechtrail, pneutrail, tsa):
 def steering_torque(rwheel, fwheel, dgear, lsa):
 
     tsi = rwheel * fwheel #Calculate the steering wheel input torque
-    fr = tsi / (dgear / 2) # Calculate the force applied on the linear rack
+    fr = np.zeros(len(dgear))
+    print(fr)
+    for i in dgear:
+        fr[i] == tsi / (dgear[i] / 2) # Calculate the force applied on the linear rack
+        print(fr[i])
+
+
+
     applied_aligning_torque = fr * lsa #Aligning torque applied by the steering wheel. This force must be equal or greater than the required torque
 
     return applied_aligning_torque
-
 
 
 def main():
@@ -37,7 +43,7 @@ def main():
     Tsa = 0  # Self aligning torque
 
     Lsa = 3.018  # Steering Arm Length (in)
-    Dgear = 1.31  # Gear Diameter
+    Dgear = [0.938, 1, 1.125, 1.25, 1.31 , 1.5, 1.625, 1.75]# Gear Diameter
     Fsteer = 40  # Steering force input by the driver (lbs)
     Rwheel = 5  # Radius of the steering wheel (in)
 
@@ -55,16 +61,14 @@ def main():
         statement = False
 
 
-    print("Required steering torque is " + Treq)
-    print("Applied torque = " + Tapp)
-
-
-
-
-
-
+    print("Required steering torque is " + str(Treq))
+    print("Applied torque = " + str(Tapp))
+    print("Treq < Tapp ? -> " + str(statement))
 
     return
+
+if __name__ == "__main__":
+    main()
 
 
 
