@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def Lateral_Force(Fnorm, mus):
     Flat = Fnorm * mus
     return Flat
@@ -20,14 +19,18 @@ def steering_torque(rwheel, fwheel, dgear, lsa):
 
     tsi = rwheel * fwheel #Calculate the steering wheel input torque
     fr = np.zeros(len(dgear))
-    print(fr)
-    for i in dgear:
-        fr[i] == tsi / (dgear[i] / 2) # Calculate the force applied on the linear rack
-        print(fr[i])
 
+    applied_aligning_torque = np.zeros(np.size(dgear))  #Create array for storing aligning torque values
 
+    for i in range(np.size(dgear)):
+        #print("Count " + str(i))       #Check
+        #print("Dgear " + str(dgear))   #Check
+        fr[i] = tsi / (dgear[i] / 2) # Calculate the force applied on the linear rack
+        #print(fr[i])   #Check
 
-    applied_aligning_torque = fr * lsa #Aligning torque applied by the steering wheel. This force must be equal or greater than the required torque
+        #print(applied_aligning_torque) #Checks
+        applied_aligning_torque[i] = fr[i] * lsa #Aligning torque applied by the steering wheel. This force must be equal or greater than the required torque
+        #print(applied_aligning_torque) #Checks
 
     return applied_aligning_torque
 
@@ -51,24 +54,30 @@ def main():
 
     #Calculate the aligning torque present in the vehicle
     Treq = required_torque(Fnorm, MUs,Rs, Mechtrail, Pneutrail, Tsa)
-
     Tapp = steering_torque(Rwheel, Fsteer, Dgear, Lsa)
+    #print(Tapp)
 
-    if Tapp >= Treq:
-        statement = True
+    for i in range(Tapp.size):
+        if Tapp[i]<=Treq:
+            print("Smallest Possible Gear Diameter = " + str(Dgear[i]))
+            index = i
+            break
+        else:
+            print(str(Dgear[i]) + "is too small")
 
-    else:
-        statement = False
+
 
 
     print("Required steering torque is " + str(Treq))
-    print("Applied torque = " + str(Tapp))
-    print("Treq < Tapp ? -> " + str(statement))
+    print("Applied torque = " + str(Tapp[i]))
+    answer = input("Are you satisfied? Y/N -> ")
+    if answer == "Y" or answer == "y":
+        print("Enjoy your race car")
+
+    else:
+        print("You done goofed, or I done goofed. Both are possible")
 
     return
 
 if __name__ == "__main__":
     main()
-
-
-
