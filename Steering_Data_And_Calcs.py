@@ -52,7 +52,7 @@ def main():
     wheelbase = 66.56   #Inches
     inner_slip_angle = 4 #Measured in degrees
     outer_slip_angle = 5.8 #Measured in degrees
-    fos = 1      #Steering angle factor of safety
+    fos = 1.15      #Steering angle factor of safety
 
     Mechtrail = 0.609  # Mechanical Trail(in)
     Pneutrail = 1  # Pneumatic Trail(in)
@@ -70,9 +70,12 @@ def main():
     ###################################################################
     #Calculate minimum steering radius to meet minimum radius
 
-    comp_minimum_outer_radius = (comp_minimum_corner_diameter / 2) * 39.37        #Minimum Outer Radius
+    comp_minimum_outer_radius_m = (comp_minimum_corner_diameter / 2)        #Minimum Outer Radius
+    print(comp_minimum_outer_radius_m)
+    center_radius_m = comp_minimum_outer_radius_m - (autox_track_width/2)
+    print(center_radius_m)
 
-    center_radius = comp_minimum_outer_radius - ((autox_track_width / 2.0) * 39.37)
+    center_radius = center_radius_m * 39.97
 
     inner_radius = center_radius - (car_track_width / 2)
     outer_radius = center_radius + (car_track_width / 2)
@@ -81,18 +84,16 @@ def main():
     inside_angle = np.rad2deg(np.pi / 2) - np.rad2deg(np.arccos((wheelbase / 2.0) / (inner_radius + 0.5 * tyre_width)))
     inside_angle = (inside_angle + inner_slip_angle) * fos
 
-
-
     #Outer Tire
     outside_angle = np.rad2deg((np.pi / 2) - np.arccos((wheelbase / 2.0) / (outer_radius + 0.5 * tyre_width)))
-    print(outside_angle)
     outside_angle = (outside_angle + outer_slip_angle) * fos
 
-
-
+    #Ackerman Percentage
+    ackerman = np.arctan(wheelbase/(wheelbase/np.tan(np.deg2rad(outside_angle))-car_track_width))
+    ackerman_percent = (np.deg2rad(inside_angle)/ackerman)*100
     print("Inner required steering angle = " + str(inside_angle))
     print("Outside required steering angle = " + str(outside_angle))
-
+    print("Ackerman Percentage = " + str(ackerman_percent) + "\n")
 
 
     #STEERING FORCES
@@ -101,15 +102,16 @@ def main():
 
     for i in range(Tapp.size):
         if Tapp[i]<=Treq:
-            print("Smallest Possible Gear Diameter = " + str(Dgear[i - 1]))
+            print("Smallest Possible Gear Diameter = " + str(Dgear[i - 1]) + "\n")
             index = i
             break
         else:
-            print("Required Torque = " + str(Treq), "Applied Torque = " + str(Tapp[i]))
-            print(str(Dgear[i]) + "is too large")
+            #print("Required Torque = " + str(Treq), "Applied Torque = " + str(Tapp[i]))
+            #print(str(Dgear[i]) + "is too large")
+            a = 1
 
     print("Required steering torque is " + str(Treq))
-    print("Applied torque = " + str(Tapp[index-1]))
+    print("Applied torque = " + str(Tapp[index-1]) + "\n")
     answer = input("Are you satisfied? Y/N -> ")
     if answer == "Y" or answer == "y":
         print("Enjoy your race car\n\n\n")
